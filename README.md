@@ -7,7 +7,7 @@ A production-grade Project Management and Sprint Workflow Application built with
 ## 🔗 Submission & Deployment Links
 
 - **GitHub Repository**: [https://github.com/gulam161/taskflow-dashboard](https://github.com/gulam161/taskflow-dashboard)
-- **Live Deployment**: [https://sprintdesk-g.vercel.app](https://sprintdesk-g.vercel.app)
+- **Live Deployment**: [https://taskflow-dashboard-xi.vercel.app](https://taskflow-dashboard-xi.vercel.app/login)
 - **Architecture Document**: [architecture.md](./architecture.md)
 - **API Documentation**: [docs/API.md](./docs/API.md)
 
@@ -20,24 +20,24 @@ The authentication system integrates with the [DummyJSON Auth API](https://dummy
 - **Username**: `emilys`
 - **Password**: `emilyspass`
 
-*(Any valid DummyJSON user credentials will authenticate successfully).*
+_(Any valid DummyJSON user credentials will authenticate successfully)._
 
 ---
 
 ## 📋 Assessment Requirements Checklist
 
-| Requirement | Description | Status | Implementation Details |
-| :--- | :--- | :---: | :--- |
-| **1. Authentication** | Email/password, form validation, protected routes, session management, logout, token refresh | ✅ Complete | DummyJSON auth, `useAuthStore`, Axios interceptors for 401 retry, token refresh |
-| **2. Dashboard Summary Cards** | Total Tasks, Pending Tasks, In Progress Tasks, Completed Tasks, High Priority Tasks | ✅ Complete | Responsive cards on `/dashboard` and `/tasks` fetching summary metrics via TanStack Query |
-| **3. Task Management (DataTable)** | Title, Description, Assignee, Priority, Status, Due Date, Created Date | ✅ Complete | `/tasks` page using custom `DataTable` component with avatar, badges, and quick actions |
-| **4. CRUD via React Query** | Create, Edit, Delete, View details, Status change | ✅ Complete | `useMutation` hooks in `use-tasks.ts` invoking `taskService` with automatic query invalidation |
-| **5. Search with Debounce** | Search by Title with 500ms debouncing | ✅ Complete | Custom `useDebounce` hook with configurable 500ms delay and cancellation |
-| **6. Filtering & Sorting** | Status filter, Priority filter, Sort by Due Date (asc/desc) | ✅ Complete | Toolbar controls integrated with TanStack Query params and Zustand UI store |
-| **7. Pagination** | Page navigation, page size selector (5, 10, 20, 50), item counters | ✅ Complete | `Pagination.tsx` component with boundary disable and ellipsis handling |
-| **8. Empty States** | Contextual empty UI with descriptive message and actions | ✅ Complete | `EmptyState.tsx` rendered on empty filter results and initial empty lists |
-| **9. Network Error Handling** | Error banner with message details and retry button | ✅ Complete | `NetworkError.tsx` banner and top-level `ErrorBoundary.tsx` |
-| **10. Architecture & Tests** | Clean service layer, Zustand + Query synergy, unit tests | ✅ Complete | 72 / 72 Vitest unit and component tests passing |
+| Requirement                        | Description                                                                                  |   Status    | Implementation Details                                                                         |
+| :--------------------------------- | :------------------------------------------------------------------------------------------- | :---------: | :--------------------------------------------------------------------------------------------- |
+| **1. Authentication**              | Email/password, form validation, protected routes, session management, logout, token refresh | ✅ Complete | DummyJSON auth, `useAuthStore`, Axios interceptors for 401 retry, token refresh                |
+| **2. Dashboard Summary Cards**     | Total Tasks, Pending Tasks, In Progress Tasks, Completed Tasks, High Priority Tasks          | ✅ Complete | Responsive cards on `/dashboard` and `/tasks` fetching summary metrics via TanStack Query      |
+| **3. Task Management (DataTable)** | Title, Description, Assignee, Priority, Status, Due Date, Created Date                       | ✅ Complete | `/tasks` page using custom `DataTable` component with avatar, badges, and quick actions        |
+| **4. CRUD via React Query**        | Create, Edit, Delete, View details, Status change                                            | ✅ Complete | `useMutation` hooks in `use-tasks.ts` invoking `taskService` with automatic query invalidation |
+| **5. Search with Debounce**        | Search by Title with 500ms debouncing                                                        | ✅ Complete | Custom `useDebounce` hook with configurable 500ms delay and cancellation                       |
+| **6. Filtering & Sorting**         | Status filter, Priority filter, Sort by Due Date (asc/desc)                                  | ✅ Complete | Toolbar controls integrated with TanStack Query params and Zustand UI store                    |
+| **7. Pagination**                  | Page navigation, page size selector (5, 10, 20, 50), item counters                           | ✅ Complete | `Pagination.tsx` component with boundary disable and ellipsis handling                         |
+| **8. Empty States**                | Contextual empty UI with descriptive message and actions                                     | ✅ Complete | `EmptyState.tsx` rendered on empty filter results and initial empty lists                      |
+| **9. Network Error Handling**      | Error banner with message details and retry button                                           | ✅ Complete | `NetworkError.tsx` banner and top-level `ErrorBoundary.tsx`                                    |
+| **10. Architecture & Tests**       | Clean service layer, Zustand + Query synergy, unit tests                                     | ✅ Complete | 72 / 72 Vitest unit and component tests passing                                                |
 
 ---
 
@@ -137,19 +137,19 @@ src/
 
 ## 📦 Libraries Used & Selection Rationale
 
-| Library | Version | Why It Was Selected |
-| :--- | :--- | :--- |
-| **React** | `18.3.1` | Industry-standard declarative UI library with Concurrent Mode, transitions, and hooks. |
-| **TypeScript** | `~6.0.2` | Compile-time type safety, autocompletion, interface contracts, and reduced runtime bugs. |
-| **Vite** | `^8.2.0` | Lightning-fast development server with ES modules and optimized Rollup production builds. |
+| Library            | Version    | Why It Was Selected                                                                                                    |
+| :----------------- | :--------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **React**          | `18.3.1`   | Industry-standard declarative UI library with Concurrent Mode, transitions, and hooks.                                 |
+| **TypeScript**     | `~6.0.2`   | Compile-time type safety, autocompletion, interface contracts, and reduced runtime bugs.                               |
+| **Vite**           | `^8.2.0`   | Lightning-fast development server with ES modules and optimized Rollup production builds.                              |
 | **TanStack Query** | `v5.101.4` | Best-in-class server-state caching, mutation lifecycles, automatic query invalidation, and background synchronization. |
-| **Zustand** | `v5.0.15` | Lightweight (<1KB), boilerplate-free client state management without context re-render penalties. |
-| **Tailwind CSS** | `v3.4.19` | Utility-first styling with zero CSS bloat, seamless dark mode class toggling, and clean responsive modifiers. |
-| **React Router** | `v6.30.6` | Declarative client-side routing with route-level code splitting via `React.lazy` and `Suspense`. |
-| **Recharts** | `v3.10.1` | Composable, responsive SVG charting library for interactive project analytics. |
-| **@dnd-kit** | `v6.3.1` | Modern, modular, accessible drag-and-drop for Kanban board column and task reordering. |
-| **Axios** | `^1.19.0` | Promise-based HTTP client with request/response interceptors for automatic JWT refresh handling. |
-| **Vitest + RTL** | `v4.1.11` | Blazing-fast Vite-native testing framework paired with React Testing Library for user-centric assertions. |
+| **Zustand**        | `v5.0.15`  | Lightweight (<1KB), boilerplate-free client state management without context re-render penalties.                      |
+| **Tailwind CSS**   | `v3.4.19`  | Utility-first styling with zero CSS bloat, seamless dark mode class toggling, and clean responsive modifiers.          |
+| **React Router**   | `v6.30.6`  | Declarative client-side routing with route-level code splitting via `React.lazy` and `Suspense`.                       |
+| **Recharts**       | `v3.10.1`  | Composable, responsive SVG charting library for interactive project analytics.                                         |
+| **@dnd-kit**       | `v6.3.1`   | Modern, modular, accessible drag-and-drop for Kanban board column and task reordering.                                 |
+| **Axios**          | `^1.19.0`  | Promise-based HTTP client with request/response interceptors for automatic JWT refresh handling.                       |
+| **Vitest + RTL**   | `v4.1.11`  | Blazing-fast Vite-native testing framework paired with React Testing Library for user-centric assertions.              |
 
 ---
 
