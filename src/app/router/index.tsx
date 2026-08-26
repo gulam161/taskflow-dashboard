@@ -8,6 +8,7 @@ import { RouteLoader } from '@/components/ui/RouteLoader';
 // Route-level code splitting using React.lazy
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
+const TasksPage = lazy(() => import('@/features/tasks/pages/TasksPage'));
 const BoardPage = lazy(() => import('@/features/board/pages/BoardPage'));
 const AnalyticsPage = lazy(() => import('@/features/analytics/pages/AnalyticsPage'));
 const NotFoundPage = lazy(() => import('@/features/common/pages/NotFoundPage'));
@@ -40,6 +41,14 @@ export const router = createBrowserRouter([
             element: (
               <Suspense fallback={<RouteLoader />}>
                 <DashboardPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/tasks',
+            element: (
+              <Suspense fallback={<RouteLoader />}>
+                <TasksPage />
               </Suspense>
             ),
           },

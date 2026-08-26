@@ -1,270 +1,256 @@
-# SprintDesk — Sprint Management Dashboard
+# TaskFlow / SprintDesk — Project Management Dashboard
 
-A production-grade, single-page sprint management application built for software engineering teams. SprintDesk provides an end-to-end workspace for managing sprint lifecycles with real-time Kanban workflows, data visualizations, live background notification polling, role-based session management, and a custom design system built from scratch.
+A production-grade Project Management and Sprint Workflow Application built with **React 18**, **TypeScript**, **Vite**, **TanStack Query v5**, **Zustand**, and **Tailwind CSS**.
 
 ---
 
-## Live Deployment & Submission Links
+## 🔗 Submission & Deployment Links
 
+- **GitHub Repository**: [https://github.com/gulam161/taskflow-dashboard](https://github.com/gulam161/taskflow-dashboard)
 - **Live Deployment**: [https://sprintdesk-g.vercel.app](https://sprintdesk-g.vercel.app)
-- **GitHub Repository**: [https://github.com/gulam161/sprintdesk.git](https://github.com/gulam161/sprintdesk.git)
 - **Architecture Document**: [architecture.md](./architecture.md)
 - **API Documentation**: [docs/API.md](./docs/API.md)
 
 ---
 
-## Demo Credentials
+## 🔑 Demo Credentials
 
-The authentication system integrates with the [DummyJSON Auth API](https://dummyjson.com/docs/auth). You can authenticate using the standard demo credentials:
+The authentication system integrates with the [DummyJSON Auth API](https://dummyjson.com/docs/auth) with token refresh and protected routes:
 
 - **Username**: `emilys`
 - **Password**: `emilyspass`
 
-_(Any valid DummyJSON user credentials will authenticate successfully)._
+*(Any valid DummyJSON user credentials will authenticate successfully).*
 
 ---
 
-## Technology Stack
+## 📋 Assessment Requirements Checklist
 
-| Category         | Technology     | Version    | Purpose                                             |
-| ---------------- | -------------- | ---------- | --------------------------------------------------- |
-| **Framework**    | React          | `18.3.1`   | Core UI engine                                      |
-| **Language**     | TypeScript     | `~6.0.2`   | Strict mode typing (`strict: true`)                 |
-| **Build Tool**   | Vite           | `^8.2.0`   | Fast dev server & optimized bundle building         |
-| **Server State** | TanStack Query | `v5.101.4` | Caching, deduplication, polling lifecycle           |
-| **Client State** | Zustand        | `v5.0.15`  | Global board, auth, notification & theme stores     |
-| **Styling**      | Tailwind CSS   | `v3.4.19`  | Custom design tokens, dark mode, animations         |
-| **Routing**      | React Router   | `v6.30.6`  | Route-level code-splitting with `lazy` & `Suspense` |
-| **Charts**       | Recharts       | `v3.10.1`  | Responsive, animated data visualizations            |
-| **Drag & Drop**  | @dnd-kit/core  | `v6.3.1`   | Accessible pointer & keyboard DnD                   |
-| **Testing**      | Vitest + RTL   | `v4.1.11`  | Unit & component integration testing (56 tests)     |
-
----
-
-> **Strict Prohibited Libraries Compliance**: 100% custom-built UI with Tailwind CSS.
-> **Zero third-party UI component libraries** (No MUI, Ant Design, Chakra UI, Shadcn UI, or react-beautiful-dnd).
+| Requirement | Description | Status | Implementation Details |
+| :--- | :--- | :---: | :--- |
+| **1. Authentication** | Email/password, form validation, protected routes, session management, logout, token refresh | ✅ Complete | DummyJSON auth, `useAuthStore`, Axios interceptors for 401 retry, token refresh |
+| **2. Dashboard Summary Cards** | Total Tasks, Pending Tasks, In Progress Tasks, Completed Tasks, High Priority Tasks | ✅ Complete | Responsive cards on `/dashboard` and `/tasks` fetching summary metrics via TanStack Query |
+| **3. Task Management (DataTable)** | Title, Description, Assignee, Priority, Status, Due Date, Created Date | ✅ Complete | `/tasks` page using custom `DataTable` component with avatar, badges, and quick actions |
+| **4. CRUD via React Query** | Create, Edit, Delete, View details, Status change | ✅ Complete | `useMutation` hooks in `use-tasks.ts` invoking `taskService` with automatic query invalidation |
+| **5. Search with Debounce** | Search by Title with 500ms debouncing | ✅ Complete | Custom `useDebounce` hook with configurable 500ms delay and cancellation |
+| **6. Filtering & Sorting** | Status filter, Priority filter, Sort by Due Date (asc/desc) | ✅ Complete | Toolbar controls integrated with TanStack Query params and Zustand UI store |
+| **7. Pagination** | Page navigation, page size selector (5, 10, 20, 50), item counters | ✅ Complete | `Pagination.tsx` component with boundary disable and ellipsis handling |
+| **8. Empty States** | Contextual empty UI with descriptive message and actions | ✅ Complete | `EmptyState.tsx` rendered on empty filter results and initial empty lists |
+| **9. Network Error Handling** | Error banner with message details and retry button | ✅ Complete | `NetworkError.tsx` banner and top-level `ErrorBoundary.tsx` |
+| **10. Architecture & Tests** | Clean service layer, Zustand + Query synergy, unit tests | ✅ Complete | 72 / 72 Vitest unit and component tests passing |
 
 ---
 
-## Features
+## 🏗️ Architecture Explanation
 
-### Required Features
+### State Management Strategy
 
-- **Secure Authentication Flow (Task 01)**:
-  - Integration with DummyJSON `POST /auth/login`.
-  - In-memory `accessToken` storage (never persisted in web storage).
-  - Rotated `refreshToken` persistence in `localStorage`.
-  - Automatic Axios request interceptor attaching `Bearer <token>`.
-  - Silent `401 Unauthorized` response interceptor with concurrent request deduplication and transparent retry.
-  - Route guards (`ProtectedRoute` & `PublicRoute`) and full-screen session initialization loader.
-- **Interactive Kanban Sprint Board (Task 02)**:
-  - Exactly the first 30 tasks seeded from `mock-data.json`.
-  - 4 Kanban columns: `Backlog`, `In Progress`, `Review`, `Done`.
-  - Cross-column and within-column drag-and-drop powered by `@dnd-kit/core` and `@dnd-kit/sortable`.
-  - Slide-over `TaskDrawer` with inline editing, metadata selectors, and real-time timestamped comments thread.
-  - Add Task modal with input validation and Delete Task confirmation dialog.
-  - Dynamic task count badges per column header.
-  - Full board state persistence across page reloads via `localStorage`.
-- **Sprint Analytics & Data Visualizations (Task 03)**:
-  - Dedicated `/analytics` route.
-  - **Sprint Velocity**: Bar chart showing completed vs. total tasks per sprint from real sprint data.
-  - **Task Status Distribution**: Interactive Donut chart displaying column task proportions.
-  - **Priority Breakdown**: Stacked bar chart showing priority distributions across columns.
-  - **Completion Trend**: Area chart derived from actual task `completedAt` timestamps.
-  - Dynamic reactivity: charts update automatically whenever board tasks are moved, created, or deleted.
-  - Fully responsive down to 375px mobile viewports.
-- **Custom UI Component Library (Task 04)**:
-  - 7 custom components built from scratch with Tailwind CSS: `Button`, `Input`, `Select`, `Modal`, `Toast`, `DataTable`, and `Skeleton`.
-  - Fully accessible with ARIA attributes, focus trapping, and keyboard controls.
-- **Real-Time Notification Feed (Task 05)**:
-  - Background polling against `https://jsonplaceholder.typicode.com/posts?_limit=5`.
-  - Unseen post ID deduplication against `knownPostIds`.
-  - Notification Bell with animated unread badge counter.
-  - Notification Panel with latest 20 items and pagination for lists exceeding 20 items.
-  - Mark as read / Mark all as read actions.
-  - **Page Visibility API**: Automatically pauses polling when the browser tab is hidden and resumes when visible.
-  - Closed-panel toast alerts firing exactly once per newly arrived notification.
-- **Quality & Optimization (Task 06)**:
-  - Route-level code splitting using `React.lazy` and `Suspense` with `RouteLoader`.
-  - Strategic `useMemo` and `useCallback` implementations.
-  - Keyboard navigation (ESC key dismissal on drawers, modals, panels).
-  - 100% test pass rate across 9 test suites.
+We maintain a strict separation of concerns between **Server State** and **Client State**:
 
-### Optional Bonuses Implemented
-
-- **Undo Move Action**: Snapshot-based rollback for accidental drag-and-drop actions.
-- **Keyboard-Accessible Drag-and-Drop**: Sortable keyboard coordinates sensor for full keyboard board navigation.
-- **Multi-Criteria Search & Filtering**: Real-time keyword search alongside priority and assignee dropdown filters.
-- **Theme System**: Seamless dark and light mode toggle with system preference auto-detection and persistence.
-
----
-
-## State Management Architecture
-
-```text
+```
 ┌─────────────────────────────────────────────────────────────┐
-│                       UI Components                         │
-│   (KanbanBoard, TaskDrawer, Charts, NotificationPanel, ...) │
+│                    UI Components Layer                      │
+│     (TasksPage, TaskTable, KanbanBoard, DashboardPage)      │
 └──────────────────────────────┬──────────────────────────────┘
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Custom Hooks Layer                       │
-│    (useAuth, useBoard, useAnalytics, useNotifications)     │
+│                     Custom Hooks Layer                      │
+│           (useTasks, useBoard, useAnalytics, useDebounce)   │
 └──────────────┬───────────────────────────────┬──────────────┘
                │                               │
                ▼                               ▼
 ┌──────────────────────────────┐ ┌────────────────────────────┐
 │      TanStack Query v5       │ │       Zustand Stores       │
-│  (Caching, Polling, Refresh) │ │ (Board, Auth, Notification)│
+│        (Server State)        │ │        (Client State)      │
+│  • Task list queries         │ │  • Filter inputs (search,  │
+│  • Caching & invalidation    │ │    status, priority)       │
+│  • CRUD mutations (create,   │ │  • Sort direction & page   │
+│    update, delete, status)   │ │  • Modal & drawer states   │
+│  • Summary metrics query     │ │  • Auth session & tokens   │
+│  • Loading & error states    │ │  • Theme (dark/light mode) │
 └──────────────┬───────────────┘ └─────────────┬──────────────┘
                │                               │
                ▼                               ▼
 ┌──────────────────────────────┐ ┌────────────────────────────┐
-│     Service Layer / API      │ │    localStorage Storage    │
-│  (auth, board, notifications)│ │   (Namespaced Persistence) │
+│      Service / API Layer     │ │    localStorage Storage    │
+│  (taskService, boardService, │ │   (Namespaced Persistence) │
+│   authService)               │ │                            │
 └──────────────┬───────────────┘ └────────────────────────────┘
                │
                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                        Data Sources                         │
-│  • DummyJSON (Auth/Refresh)                                 │
-│  • JSONPlaceholder (Simulated Notification Polling)         │
-│  • mock-data.json (Initial Board Tasks, Sprints, Comments)  │
+│  • In-Memory Store / mock-data.json (Tasks, Sprints, Users) │
+│  • DummyJSON API (Authentication & Token Refresh)           │
+│  • JSONPlaceholder API (Live Notification Polling)          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-1. **Server State (TanStack Query v5)**: Manages network queries, query keys, caching, request deduplication, and tab-visibility-controlled background polling.
-2. **Client State (Zustand)**: Manages memory-only authentication sessions, interactive Kanban board ordering, notifications, and theme settings.
-3. **Local Component State (`useState`, `useRef`)**: Confined to transient UI concerns (modal visibility, form field values, dropdown toggles).
+1. **Server State (TanStack Query v5)**:
+   - Holds all remote/mock data: tasks, summary statistics, user list, and notifications.
+   - Encodes search queries, filter values, sort orders, and page indices into query keys `['tasks', { search, status, priority, sortOrder, page, limit }]`.
+   - Handles mutation lifecycles (`onSuccess` triggers query invalidation and toast alerts).
+
+2. **Client State (Zustand)**:
+   - Holds purely UI and session state: search input text, active filter dropdowns, sort toggle, current page index, modal open/close states, active theme, and auth tokens.
+   - **Zero duplicated server state**: Task data is not stored in Zustand for the task management feature, keeping TanStack Query as the single source of truth.
+
+3. **Service Layer (`task-service.ts`, `board-service.ts`, `auth-service.ts`)**:
+   - Centralizes all data access and simulated async network latency (`await delay()`).
+   - Ensures no direct `fetch` or HTTP logic is scattered across UI components.
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```text
 src/
-├── api/                        # HTTP client and Axios interceptors
-├── app/                        # App root, providers, and React Router routes
+├── api/                        # Axios client, endpoints, and 401 refresh interceptors
+├── app/                        # Root App, Providers (Query, Theme, ErrorBoundary), Router
+│   ├── providers/              # QueryProvider, ThemeProvider, ErrorBoundary
+│   └── router/                 # ProtectedRoute, PublicRoute, React.lazy code splitting
 ├── components/
-│   ├── layout/                 # AppLayout, Header, Sidebar
-│   └── ui/                     # Custom Design System components
+│   ├── layout/                 # AppLayout, Header, Sidebar navigation
+│   └── ui/                     # Reusable design system (Button, Input, Select, Modal,
+│                               #   DataTable, Toast, Skeleton, ErrorBoundary)
 ├── features/
-│   ├── auth/                   # Authentication forms, hooks, services, stores
-│   ├── board/                  # Kanban board, cards, drawers, modals, filters
-│   ├── analytics/              # Recharts visualizations and KPI summaries
-│   ├── dashboard/              # Active sprint overview and data tables
-│   └── notifications/          # Notification bell, panel, and polling hooks
-├── stores/                     # Theme store
+│   ├── auth/                   # Login screen, auth forms, auth-service, useAuth
+│   ├── tasks/                  # Task Management Feature (Assessment Requirement)
+│   │   ├── api/                # task-service.ts (GET, POST, PUT, DELETE)
+│   │   ├── components/         # TaskTable, TaskManagementFilters, TaskFormModal,
+│   │   │                       #   Pagination, EmptyState, NetworkError, SummaryCards
+│   │   ├── hooks/              # use-tasks.ts, use-debounce.ts (500ms)
+│   │   ├── pages/              # TasksPage.tsx (DataTable view & workflows)
+│   │   └── store/              # task-ui-store.ts (Zustand client UI state)
+│   ├── board/                  # Interactive Kanban board (@dnd-kit drag-and-drop)
+│   ├── analytics/              # Recharts velocity, distribution, priority & trend charts
+│   ├── dashboard/              # Sprint overview & 5 KPI summary cards
+│   └── notifications/          # Live polling notification panel & toasts
+├── stores/                     # Global theme store (dark/light)
 ├── types/                      # TypeScript definitions (auth, board, api, common)
-├── utils/                      # Constants, date helpers, storage abstractions
-└── tests/                      # Vitest unit and integration test suites
+├── utils/                      # Constants, date helpers, cn utility, storage wrapper
+└── tests/                      # 10 Vitest suites covering hooks, services & components
 ```
 
 ---
 
-## Getting Started Locally
+## 📦 Libraries Used & Selection Rationale
+
+| Library | Version | Why It Was Selected |
+| :--- | :--- | :--- |
+| **React** | `18.3.1` | Industry-standard declarative UI library with Concurrent Mode, transitions, and hooks. |
+| **TypeScript** | `~6.0.2` | Compile-time type safety, autocompletion, interface contracts, and reduced runtime bugs. |
+| **Vite** | `^8.2.0` | Lightning-fast development server with ES modules and optimized Rollup production builds. |
+| **TanStack Query** | `v5.101.4` | Best-in-class server-state caching, mutation lifecycles, automatic query invalidation, and background synchronization. |
+| **Zustand** | `v5.0.15` | Lightweight (<1KB), boilerplate-free client state management without context re-render penalties. |
+| **Tailwind CSS** | `v3.4.19` | Utility-first styling with zero CSS bloat, seamless dark mode class toggling, and clean responsive modifiers. |
+| **React Router** | `v6.30.6` | Declarative client-side routing with route-level code splitting via `React.lazy` and `Suspense`. |
+| **Recharts** | `v3.10.1` | Composable, responsive SVG charting library for interactive project analytics. |
+| **@dnd-kit** | `v6.3.1` | Modern, modular, accessible drag-and-drop for Kanban board column and task reordering. |
+| **Axios** | `^1.19.0` | Promise-based HTTP client with request/response interceptors for automatic JWT refresh handling. |
+| **Vitest + RTL** | `v4.1.11` | Blazing-fast Vite-native testing framework paired with React Testing Library for user-centric assertions. |
+
+---
+
+## ⚡ Performance Optimizations
+
+1. **500ms Search Debouncing (`useDebounce`)**:
+   - Prevents re-filtering and query execution on every single keystroke.
+   - Cancels pending timers if the user continues typing.
+
+2. **Route-Level Code Splitting (`React.lazy` & `Suspense`)**:
+   - Each top-level route (`LoginPage`, `DashboardPage`, `TasksPage`, `BoardPage`, `AnalyticsPage`) is compiled into its own asynchronous chunk.
+   - Initial bundle size is minimized, speeding up First Contentful Paint (FCP).
+
+3. **TanStack Query Caching & Stale-While-Revalidate**:
+   - Serves cached task data immediately while background refetching keeps data fresh.
+   - Deduplicates identical concurrent requests across components.
+
+4. **Memoized Computations & Callbacks (`useMemo`, `useCallback`)**:
+   - Table columns, user lookup maps, and filter derivations are memoized to avoid redundant calculations across renders.
+   - Handlers passed to child components maintain stable identities.
+
+---
+
+## 🚀 Getting Started Locally
 
 ### Prerequisites
 
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
+- **Node.js**: `v18.0.0` or higher
+- **npm**: `v9.0.0` or higher
 
-### Installation & Run Commands
+### Installation & Run Steps
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/gulam161/sprintdesk.git
-cd sprintdesk
+git clone https://github.com/gulam161/taskflow-dashboard.git
+cd taskflow-dashboard
 
 # 2. Install dependencies
 npm install
 
-# 3. Start development server
+# 3. Start local development server
 npm run dev
 ```
 
-The application will be accessible at `http://localhost:5173`.
+Visit `http://localhost:5173` in your browser.
 
 ---
 
-## Environment Variables
+## 🧪 Testing & Verification
 
-**No environment variables are required for the current implementation.** Built-in fallback constants in `src/utils/constants.ts` handle default API base URLs.
-
-An optional template is provided in [.env.example](./.env.example):
-
-```env
-# Optional API URL overrides
-# VITE_API_BASE_URL=https://dummyjson.com
-# VITE_JSON_PLACEHOLDER_URL=https://jsonplaceholder.typicode.com
-```
-
----
-
-## Verification & Testing Commands
-
-Execute the test suites and static analysis tools using the following commands:
+Run the automated test suite with Vitest:
 
 ```bash
-# Run complete unit and integration test suite
+# Run all unit and integration tests
 npm run test
 
-# Run ESLint static analysis
-npm run lint
-
-# Compile TypeScript and build production bundle
+# Run TypeScript type check & production build
 npm run build
+
+# Run ESLint analysis
+npm run lint
 ```
 
-### Verified Test Suite Output
+### Verified Test Results
 
-```
+```text
+ ✓ src/tests/task-management.test.tsx (16 tests)
+ ✓ src/tests/design-system.test.tsx (12 tests)
+ ✓ src/tests/board-store.test.ts (9 tests)
  ✓ src/tests/notification-store.test.ts (7 tests)
  ✓ src/tests/analytics-service.test.ts (6 tests)
- ✓ src/tests/utils.test.ts (6 tests)
- ✓ src/tests/use-toast.test.tsx (3 tests)
- ✓ src/tests/auth-interceptor.test.ts (4 tests)
- ✓ src/tests/design-system.test.tsx (12 tests)
  ✓ src/tests/notification-components.test.tsx (6 tests)
- ✓ src/tests/board-store.test.ts (9 tests)
+ ✓ src/tests/utils.test.ts (6 tests)
+ ✓ src/tests/auth-interceptor.test.ts (4 tests)
+ ✓ src/tests/use-toast.test.tsx (3 tests)
  ✓ src/tests/notification-service.test.ts (3 tests)
 
- Test Files  9 passed (9)
-      Tests  56 passed (56)
+ Test Files  10 passed (10)
+      Tests  72 passed (72)
+   Duration  9.54s
 ```
 
-| Verification         | Command         | Status                                          |
-| -------------------- | --------------- | ----------------------------------------------- |
-| **Vitest Tests**     | `npm run test`  | **56 / 56 passed** (100%)                       |
-| **TypeScript Check** | `tsc -b`        | **0 errors**                                    |
-| **ESLint Analysis**  | `npm run lint`  | **0 errors, 0 warnings**                        |
-| **Production Build** | `npm run build` | **Clean build** with route-level code splitting |
+---
+
+## 🌟 Bonus Features Implemented
+
+- **TypeScript Strict Mode**: 100% strict type safety across all components, hooks, services, and tests.
+- **Error Boundary**: Top-level `ErrorBoundary` catching unexpected React rendering errors with a recovery UI.
+- **Dark / Light Mode**: Instant theme switching with system preference detection and localStorage persistence.
+- **Accessibility (a11y)**: Full ARIA labels, semantic HTML tags, keyboard navigation (`Escape` dismissal, modal focus trap).
+- **Toast Notifications**: Lightweight custom toast system for create/edit/delete feedback.
+- **Kanban Board & Analytics**: Full interactive Kanban board with undo capability and 4 Recharts data visualizations.
 
 ---
 
-## Deployment & SPA Routing Configuration
+## 🔮 Known Limitations & Future Improvements
 
-SprintDesk is deployed on **Vercel** with dedicated Single Page Application (SPA) rewrite rules in [vercel.json](./vercel.json) and [public/\_redirects](./public/_redirects) to ensure page refreshes on subpaths (`/dashboard`, `/board`, `/analytics`, `/login`) resolve seamlessly to `index.html` without 404 errors.
+If additional development time were available, the following enhancements would be added:
 
----
-
-## Recommended Screen Recording Walkthrough
-
-For evaluators or recording demonstrations, the recommended 15-step sequence is:
-
-1. **Login**: Navigate to `/login`, enter demo credentials (`emilys` / `emilyspass`), and observe the full-screen session loader.
-2. **Dashboard Overview**: View the active sprint summary, KPI cards, and the actionable tasks `DataTable`.
-3. **Kanban Navigation**: Navigate to `/board` and review the 4 workflow columns seeded with the first 30 tasks.
-4. **Drag & Drop Reordering**: Drag a task card within the same column to adjust priority order.
-5. **Cross-Column Transition**: Drag a task from `Backlog` to `In Progress` or `Review` to `Done`.
-6. **Undo Last Move**: Click the "Undo Move" button to roll back the column transition.
-7. **Task Details Drawer**: Click any task card to open the slide-over drawer; update title/description inline.
-8. **Comment Thread**: Post a new timestamped comment in the task drawer.
-9. **Add Task**: Open the "Add Task" modal, fill in details, and submit to create a new task card.
-10. **Delete Task**: Trigger task deletion and confirm via the modal dialog.
-11. **Search & Filters**: Filter tasks by Priority (`High`), Assignee, and keyword search.
-12. **Analytics Visualizations**: Navigate to `/analytics` and inspect the 4 dynamic charts (Velocity, Status, Priority, Trend).
-13. **Theme Switching**: Toggle the sun/moon button in the header to switch between light and dark modes.
-14. **Notifications**: Click the notification bell to open the panel, mark an item as read, and observe pagination.
-15. **Logout**: Click the logout button to clear session state and return to `/login`.
+1. **Real Backend Integration**: Replace the in-memory simulated service with a production REST/GraphQL backend (e.g., PostgreSQL with Supabase or Node.js Express).
+2. **Optimistic UI with Rollback**: Extend React Query mutations with `onMutate` optimistic updates and snapshot-based rollbacks on network failure.
+3. **Multi-Column Sorting**: Support multi-column sorting (e.g., sort by Priority + Due Date simultaneously).
+4. **Task Export**: Add CSV/PDF export capability for filtered task lists.
+5. **WebSocket / SSE Live Sync**: Real-time multi-user collaboration and instant task update broadcasting.

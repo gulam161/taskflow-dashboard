@@ -30,7 +30,7 @@
 | **Routing**      | React Router   | `v6.30.6`  | Route-level code-splitting with `lazy` & `Suspense` |
 | **Charts**       | Recharts       | `v3.10.1`  | Responsive, animated data visualizations            |
 | **Drag & Drop**  | @dnd-kit/core  | `v6.3.1`   | Accessible pointer & keyboard DnD                   |
-| **Testing**      | Vitest + RTL   | `v4.1.11`  | Unit & component integration testing (56 tests)     |
+| **Testing**      | Vitest + RTL   | `v4.1.11`  | Unit & component integration testing (72 tests)     |
 
 ---
 
@@ -40,26 +40,28 @@
 graph TD
     subgraph UI_Layer [Presentation Layer]
         Router[React Router v6 - Route-Level Lazy]
-        Pages[LoginPage / DashboardPage / BoardPage / AnalyticsPage]
-        Components[KanbanBoard / TaskDrawer / Charts / NotificationPanel]
-        DesignSystem[Button / Input / Select / Modal / Toast / DataTable / Skeleton]
+        Pages[LoginPage / DashboardPage / TasksPage / BoardPage / AnalyticsPage]
+        Components[TaskTable / KanbanBoard / TaskDrawer / Charts / NotificationPanel]
+        DesignSystem[Button / Input / Select / Modal / Toast / DataTable / Skeleton / ErrorBoundary]
     end
 
     subgraph Hooks_Layer [State & Interaction Hooks]
         useAuthHook[useAuth]
+        useTasksHook[useTasks + useDebounce]
         useBoardHook[useBoard]
         useAnalyticsHook[useAnalytics]
         useNotifsHook[useNotifications]
     end
 
     subgraph State_Management [State Management Layer]
-        QueryClient[TanStack Query v5 - Server State Cache]
-        ZustandStores[Zustand - Client State: Board / Auth / Notifications / Theme]
+        QueryClient[TanStack Query v5 - Server State Cache & Mutations]
+        ZustandStores[Zustand - Client State: UI Stores / Auth / Notifications / Theme]
         LocalStorage[Storage Abstraction - Namespaced LocalStorage]
     end
 
     subgraph Service_Layer [Service & Abstraction Layer]
         AuthService[auth-service.ts]
+        TaskService[task-service.ts - CRUD & Pagination]
         BoardService[board-service.ts]
         AnalyticsService[analytics-service.ts]
         NotifService[notification-service.ts]
@@ -69,7 +71,7 @@ graph TD
     subgraph Data_Sources [Data Sources]
         DummyJSON[DummyJSON API - Auth & Token Refresh]
         JSONPlaceholder[JSONPlaceholder API - Polling Feed]
-        MockData[mock-data.json - Seed Tasks / Users / Sprints / Comments]
+        MockData[mock-data.json / In-Memory Store - Seed Tasks / Users / Sprints]
     end
 
     Pages --> Components
@@ -78,22 +80,24 @@ graph TD
 
     useAuthHook --> ZustandStores
     useAuthHook --> AuthService
+    useTasksHook --> QueryClient
+    useTasksHook --> ZustandStores
+    QueryClient --> TaskService
     useBoardHook --> QueryClient
     useBoardHook --> ZustandStores
+    QueryClient --> BoardService
     useAnalyticsHook --> ZustandStores
     useAnalyticsHook --> AnalyticsService
     useNotifsHook --> QueryClient
     useNotifsHook --> ZustandStores
-
-    QueryClient --> Service_Layer
-    ZustandStores <--> LocalStorage
-    Service_Layer --> AxiosClient
+    QueryClient --> NotifService
 
     AuthService --> AxiosClient
-    BoardService --> MockData
-    NotifService --> AxiosClient
     AxiosClient --> DummyJSON
-    AxiosClient --> JSONPlaceholder
+    NotifService --> JSONPlaceholder
+    TaskService --> MockData
+    BoardService --> MockData
+    ZustandStores --> LocalStorage
 ```
 
 ---

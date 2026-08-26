@@ -1,11 +1,11 @@
-import { useAnalytics } from '../hooks/use-analytics';
-import { KpiCards } from '../components/KpiCards';
-import { SprintVelocityChart } from '../components/SprintVelocityChart';
-import { StatusDistributionChart } from '../components/StatusDistributionChart';
-import { PriorityBreakdownChart } from '../components/PriorityBreakdownChart';
-import { CompletionTrendChart } from '../components/CompletionTrendChart';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { Button } from '@/components/ui/Button';
+import { useAnalytics } from "../hooks/use-analytics";
+import { SprintVelocityChart } from "../components/SprintVelocityChart";
+import { StatusDistributionChart } from "../components/StatusDistributionChart";
+import { PriorityBreakdownChart } from "../components/PriorityBreakdownChart";
+import { CompletionTrendChart } from "../components/CompletionTrendChart";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { Button } from "@/components/ui/Button";
+import { DashboardSummaryCards } from "@/features/tasks/components/DashboardSummaryCards";
 
 export function AnalyticsPage() {
   const {
@@ -13,7 +13,6 @@ export function AnalyticsPage() {
     statusDistribution,
     priorityBreakdown,
     completionTrend,
-    kpiSummary,
     isLoading,
     isError,
     error,
@@ -23,7 +22,12 @@ export function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <Skeleton variant="text" width="200px" height="28px" className="mb-2" />
+          <Skeleton
+            variant="text"
+            width="200px"
+            height="28px"
+            className="mb-2"
+          />
           <Skeleton variant="text" width="360px" height="18px" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -44,7 +48,7 @@ export function AnalyticsPage() {
     return (
       <div className="p-8 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-center space-y-4">
         <p className="text-red-700 dark:text-red-300 font-semibold">
-          Failed to load analytics: {error?.message || 'Unknown error'}
+          Failed to load analytics: {error?.message || "Unknown error"}
         </p>
         <Button variant="outline" onClick={() => window.location.reload()}>
           Retry
@@ -62,13 +66,14 @@ export function AnalyticsPage() {
             Sprint Analytics
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Real-time visualizations for sprint velocity, task distribution, and completion trends.
+            Real-time visualizations for sprint velocity, task distribution, and
+            completion trends.
           </p>
         </div>
       </div>
 
-      {/* KPI Overview Cards */}
-      <KpiCards summary={kpiSummary} />
+      {/* Dashboard Overview Cards */}
+      <DashboardSummaryCards />
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

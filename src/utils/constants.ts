@@ -42,3 +42,19 @@ export const STATUS_COLORS: Record<TaskStatus, string> = {
 /** Number of tasks to fetch from mock data */
 export const INITIAL_TASK_LIMIT = 30;
 
+/** Default tasks per page for the Task Management table */
+export const TASKS_PER_PAGE = 10;
+
+/** Debounce delay in ms for search input */
+export const SEARCH_DEBOUNCE_MS = 500;
+
+/** Human-readable status labels for Task Management page */
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  backlog: 'Pending',
+  'in-progress': 'In Progress',
+  review: 'Review',
+  done: 'Completed',
+};
+
+/** All statuses for filter dropdowns */
+export const TASK_STATUSES: TaskStatus[] = ['backlog', 'in-progress', 'review', 'done'];
