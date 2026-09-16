@@ -38,6 +38,12 @@ export function LoginForm() {
     });
   };
 
+  const fillDemoCredentials = () => {
+    setUsername("emilys");
+    setPassword("emilyspass");
+    setValidationErrors({});
+  };
+
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {loginError && (
@@ -185,6 +191,18 @@ export function LoginForm() {
       >
         Sign In
       </Button>
+
+      {/* Demo Credentials Quick Fill */}
+      <div className="pt-2">
+        <button
+          type="button"
+          onClick={fillDemoCredentials}
+          className="w-full text-center text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium py-1.5 px-3 rounded-lg bg-primary-50 dark:bg-primary-950/40 hover:bg-primary-100 dark:hover:bg-primary-950/70 border border-primary-100 dark:border-primary-900/50 transition-colors"
+        >
+          Quick fill demo credentials (<code>emilys</code> /{" "}
+          <code>emilyspass</code>)
+        </button>
+      </div>
     </form>
   );
 }
